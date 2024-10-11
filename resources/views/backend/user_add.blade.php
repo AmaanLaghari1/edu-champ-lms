@@ -29,24 +29,23 @@ Add User
                 <div class="widget-box">
                     <div class="wc-title">
                         <h4>Add User</h4>
-                        <div class="form-group col-6">
-                            <label class="col-form-label" for="role">Role<span class="text-danger">*</span></label>
-                            <select name="role" id="role" class="form-control" required>
-                                <option value="">Choose an option</option>
-                                <option value="admin">Admin</option>
-                                <option value="student" selected>Student</option>
-                                <option value="teacher">Teacher</option>
-                            </select>
-                        </div>
                     </div>
                     <div class="widget-inner">
-                        <form id="student_form" action="{{route('user_add')}}" method="POST" class="edit-profile m-b30" novalidate>
+                        <form id="form" action="{{route('user_add')}}" method="POST" enctype="multipart/form-data" class="edit-profile m-b30" novalidate>
                             @csrf
                             <div class="row">
                                 <div class="col-12">
                                     <div class="ml-auto">
-                                        <h3>1. Student info</h3>
+                                        <h3>1. Basic info</h3>
                                     </div>
+                                </div>
+                                <div class="form-group col-6">
+                                    <label class="col-form-label" for="role">Role<span class="text-danger">*</span></label>
+                                    <select name="role" id="role" class="form-control" required>
+                                        <option value="student" selected>Student</option>
+                                        <option value="teacher">Teacher</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
                                 </div>
                                 <div class="form-group col-6">
                                     <label class="col-form-label" for="s_first_name">First Name<span class="text-danger">*</span></label>
@@ -75,55 +74,41 @@ Add User
                                 <div class="form-group col-6">
                                     <label class="col-form-label">Picture</label>
                                     <div>
-                                        <input class="form-control" type="file">
+                                        <input class="form-control" type="file" name="profile_picture" value="{{old('s_profile_pic')}}">
                                     </div>
                                 </div>
+
                                 
-                                <div class="col-12">
-                                    <button type="submit" class="btn">Save changes</button>
-                                </div>
                             </div>
-                        </form>
-                        <form id="teacher_form" style="display: none" action="{{route('user_add')}}" method="POST" class="edit-profile m-b30" novalidate>
-                            @csrf
-                            <div class="row">
+                            <div class="row" id="teacher_fields" style="display: none">
                                 <div class="col-12">
                                     <div class="ml-auto">
-                                        <h3>1. Teacher info</h3>
+                                        <h3>2. Qualifications</h3>
                                     </div>
                                 </div>
-                                <div class="form-group col-6">
-                                    <label class="col-form-label" for="first_name">First Name<span class="text-danger">*</span></label>
-                                    <div>
-                                        <input class="form-control" type="text" value="{{old('first_name')}}" name="first_name" id="first_name" required>
-                                    </div>
-                                </div>
-                                <div class="form-group col-6">
-                                    <label class="col-form-label" for="last_name">Last Name<span class="text-danger">*</span></label>
-                                    <div>
-                                        <input class="form-control" type="text" value="{{old('last_name')}}" name="last_name" id="last_name" required>
-                                    </div>
-                                </div>
-                                <div class="form-group col-6">
-                                    <label class="col-form-label" for="email">Email<span class="text-danger">*</span></label>
-                                    <div>
-                                        <input class="form-control" type="email" value="{{old('email')}}" name="email" id="email" required>
-                                    </div>
-                                </div>
-                                <div class="form-group col-6">
-                                    <label class="col-form-label" for="password">Password<span class="text-danger">*</span></label>
-                                    <div>
-                                        <input class="form-control" type="password" name="password" id="password" value="{{old('password')}}" required>
-                                    </div>
-                                </div>
-                                <div class="form-group col-6">
-                                    <label class="col-form-label">Picture</label>
-                                    <div>
-                                        <input class="form-control" type="file">
-                                    </div>
-                                </div>
-                                
                                 <div class="col-12">
+                                    <label for="university" class="col-form-label">University</label>
+                                    <input type="text" class="form-control" name="university" id="university">
+                                </div>
+                                <div class="col-12">
+                                    <label for="degree" class="col-form-label">Degree</label>
+                                    <input type="text" class="form-control" name="degree" id="degree">
+                                </div>
+                                <div class="col-12">
+                                    <label for="city" class="col-form-label">City</label>
+                                    <input type="text" class="form-control" name="city" id="city">
+                                </div>
+                                <div class="col-12">
+                                    <label for="expertise" class="col-form-label">Expertise</label>
+                                    <input type="text" class="form-control" name="expertise" id="expertise">
+                                </div>
+                                <div class="col-12">
+                                    <label for="about" class="col-form-label">About</label>
+                                    <textarea name="about" id="about" cols="30" rows="3" class="form-control"></textarea>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 py-2">
                                     <button type="submit" class="btn">Save changes</button>
                                 </div>
                             </div>
@@ -147,23 +132,13 @@ Add User
     $(document).ready(function(){
 
         $("#role").change(function(){
-            if($(this).val() === 'admin'){
-                alert("admin")
-            }
-            else if($(this).val() === 'teacher'){
-                $("#student_form").hide()
-                $("#teacher_form").show()
+            if($(this).val() === 'teacher'){
+                $("#teacher_fields").show()
             }
             else {
-                $("#teacher_form").hide()
-                $("#student_form").show()
+                $("#teacher_fields").hide()
             }
-        })
-
-        jQuery.validator.addMethod("validRole", function(value, element){
-            return element.value !== ""
-        }, "Role invalid")
-    
+        })    
     
         $(function(){
             $("#form").validate({
@@ -186,8 +161,30 @@ Add User
                         required: true,
                         validRole: ""
                     },
-                    item: {
-                        required: true,
+                    university: {
+                        required: function(element){
+                            return $("#role").val() === 'teacher'
+                        },
+                    },
+                    degree: {
+                        required: function(element){
+                            return $("#role").val() === 'teacher'
+                        },
+                    },
+                    city: {
+                        required: function(element){
+                            return $("#role").val() === 'teacher'
+                        },
+                    },
+                    expertise: {
+                        required: function(element){
+                            return $("#role").val() === 'teacher'
+                        },
+                    },
+                    about: {
+                        required: function(element){
+                            return $("#role").val() === 'teacher'
+                        },
                     },
                 },
                 messages: {
@@ -207,6 +204,21 @@ Add User
                     },
                     role: {
                         required: "Please select a role"
+                    },
+                    university: {
+                        required: "University is required"
+                    },
+                    degree: {
+                        required: "Degree is required"
+                    },
+                    city: {
+                        required: "City is required"
+                    },
+                    expertise: {
+                        required: "Expertise is required"
+                    },
+                    about: {
+                        required: "About is required"
                     }
                 }
             })

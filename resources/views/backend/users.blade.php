@@ -44,7 +44,6 @@ Users
                         <td>{{$user->role}}</td>
                         <td>{{$user->status}}</td>
                         <td>
-                            <a href="#" class="btn btn-sm">Edit</a>
                             <form action="{{route('user_delete')}}" method="POST" class="user_delete_form d-inline">
                                 @csrf
                                 <input type="hidden" name="id" value="{{$user->id}}">

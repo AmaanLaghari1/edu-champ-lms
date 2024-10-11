@@ -56,6 +56,11 @@ return [
             'throw' => false,
         ],
 
+        'website' => [
+            'driver' => 'local',
+            'root' => public_path().'/website/assets/images/uploads',
+        ]
+
     ],
 
     /*

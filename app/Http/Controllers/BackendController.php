@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\User;
+use App\Models\TeacherDetail;
+use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Http\Request;
 
@@ -31,10 +33,48 @@ class BackendController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required'],
-            'role' => ['required']
         ]);
 
-        $user = User::create($request->all());
+        if ($request->role === 'teacher') {
+            $request->validate([
+                'university' => ['required', 'string', 'max:255'],
+                'degree' => ['required', 'string', 'max:255'],
+                'city' => ['required', 'string', 'max:255'],
+                'expertise' => ['required', 'string', 'max:255'],
+                'about' => ['required', 'string'],
+            ]);
+        }
+
+        $profilePicturePath = null;
+        if($request->hasFile('profile_picture')){
+            $profilePicturePath = Storage::disk('website')->put('profile_pics', $request->profile_picture);
+        }
+
+        $data = [
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'name' => $request->first_name ." ". $request->last_name,
+            'email' => $request->email,
+            'password' => $request->password,
+            'picture' => $profilePicturePath,
+            'status' => 1,
+            'role' => $request->role,
+        ];
+
+        $user = User::create($data);
+
+        if($user && $request->role === 'teacher'){
+            $teacher = TeacherDetail::create([
+                'user_id' => $user->id,
+                'university' => $request->university,
+                'degree' => $request->degree,
+                'city' => $request->city,
+                'expertise' => $request->expertise,
+                'about' => $request->about
+            ]);
+
+            return back()->with(['title' => 'Done', 'message' => "Teacher created successfully", 'type' => 'success']);
+        }
 
         if($user){
             return back()->with(['title' => 'Done', 'message' => "User created successfully", 'type' => 'success']);
